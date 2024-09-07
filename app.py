@@ -65,6 +65,23 @@ def login():
     else:
         return jsonify({"msg": "Credenciales incorrectas"}), 401
 
+#Creamos el endpoint protegido (Ruta/protección/función)
+@app.route('/datos', methods=['POST'])                
+@jwt_required() #Con solo este decorador ya se pide un token
+def datos():
+    data = request.get_json()
+    username = data.get('username')
+
+    #usuario = mongo.db.users.find_one({"username":username})
+    usuario = mongo.db.users.find_one({"username":username}, {"password":0})
+
+    if usuario:
+        usuario["_id"]= str(usuario["_id"])
+        return jsonify({"msg": "Usuario encontrado", "Usuario": usuario}), 200
+    else:
+        return jsonify({"msg": "Usuario  encontrado"}), 404
+
+
 #En Python, cada archivo tiene una variable especial llamada __name__.
 #Si el archivo se esta ejecutando directamente (no importado como un módulo en otro archivo),
 #__name__ se establece en '__main__'
